@@ -85,3 +85,5 @@ nextApp.prepare().then(() => {
 		console.log('server is listening on port', port)
 	})
 });
+
+module.exports = app
