@@ -3,11 +3,12 @@ import styles from '@/styles/Home.module.css'
 import { useState, useEffect } from 'react'
 import { io } from 'socket.io-client';
 const socket = io();
+import MessageModel from '../../models/messageModel';
 
-export default function Home() {
+export default function Home({mongoMessages}) {
   const [message, setMessage] = useState("")
   const [name, setName] = useState("")
-  const [allMessages, setAllMessages] = useState([])
+  const [allMessages, setAllMessages] = useState(mongoMessages)
 
   const handleEnter = async (event) => {
     event.preventDefault()
@@ -57,4 +58,15 @@ export default function Home() {
       </main>
     </>
   )
+}
+
+export const getServerSideProps =  async () => {
+  const retrievedMessages = await MessageModel.find({})
+  console.log(retrievedMessages)
+
+  return {
+    props:{
+      mongoMessages: JSON.parse(JSON.stringify(retrievedMessages))
+    }
+  }
 }
