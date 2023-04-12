@@ -6,6 +6,13 @@ var { createServer } = require('http')
 var { Server } = require('socket.io')
 const httpServer = createServer(app);
 const io = new Server(httpServer, { /* options */ });
+const mongoose = require('mongoose')
+const MessageModel = require('../../models/messageModel')
+require('dotenv').config();
+
+
+
+
 
 // next.js configuration to use express
 const dev = process.env.NODE_DEV !== 'production'
@@ -25,14 +32,23 @@ app.use(bodyParser.json());
 // ! line below is important
 nextApp.prepare().then(() => {
 
-	app.get('/', (req, res) => {
+	app.get('/', async (req, res) => {
 		console.log("Getting stuff from home page");
 		return nextApp.render(req, res, '/', req.query);
 	})
 
-	app.post('/api/message', (req, res) => {
-		io.emit('message', req.body)
-		res.status(200).send("Message Received");
+	app.post('/api/message', async (req, res) => {
+		var message = new MessageModel(req.body)
+		await message.save()
+
+		
+
+			io.emit('message', req.body)
+			res.status(200).send("Message Received");
+			console.log("SAVED")
+
+
+		
 	});
 
 // ! and apparently this line below too which handles all routes
@@ -40,8 +56,17 @@ nextApp.prepare().then(() => {
 		return handle(req, res)
 	})
 
-	const port = 3000
+	mongoose.connect(process.env.DB_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+  })
 
+	mongoose.connection
+		.on("open", () => console.log("SUCCESS CONNECTION TO MONGOOSE"))
+		.on("close", () => console.log("ERROR CONNECTION TO MONGOOSE"))
+		.on("error", (error) => console.log(error))
+
+	const port = 3000
 	httpServer.listen(port, () => {
 		console.log('server is listening on port', port)
 	})
