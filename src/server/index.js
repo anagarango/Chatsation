@@ -8,6 +8,7 @@ const httpServer = createServer(app);
 const io = new Server(httpServer, { /* options */ });
 const mongoose = require('mongoose')
 const MessageModel = require('../../models/messageModel')
+
 require('dotenv').config();
 
 
@@ -34,21 +35,34 @@ nextApp.prepare().then(() => {
 
 	app.get('/', async (req, res) => {
 		console.log("Getting stuff from home page");
+		res.status(200);
 		return nextApp.render(req, res, '/', req.query);
 	})
 
+	app.get('/api/message', async (req, res) => {
+		const retrievedMessages = await MessageModel.find({})
+		res.status(200).json(JSON.parse(JSON.stringify(retrievedMessages)))
+	});
+
 	app.post('/api/message', async (req, res) => {
 		var message = new MessageModel(req.body)
+
 		await message.save()
+			.then(()=>{
+				io.emit('message', req.body)
+				res.status(200).send("Message Received");
+				console.log("SAVED")
+			})
+			.catch((err)=>{
+				return console.log(err)
+			})
+	});
 
+	app.get('/api/message/:user', async (req, res) => {
+		const user = req.params.user;
 		
-
-			io.emit('message', req.body)
-			res.status(200).send("Message Received");
-			console.log("SAVED")
-
-
-		
+		const retrievedMessages = await MessageModel.find({ name: user })
+		res.status(200).json(JSON.parse(JSON.stringify(retrievedMessages)))
 	});
 
 // ! and apparently this line below too which handles all routes
