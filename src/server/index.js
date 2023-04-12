@@ -1,6 +1,11 @@
 const express = require('express')
 const next = require('next')
 const bodyParser = require('body-parser');
+const app = express()
+var { createServer } = require('http')
+var { Server } = require('socket.io')
+const httpServer = createServer(app);
+const io = new Server(httpServer, { /* options */ });
 
 // next.js configuration to use express
 const dev = process.env.NODE_DEV !== 'production'
@@ -8,10 +13,17 @@ const nextApp = next({ dev })
 const handle = nextApp.getRequestHandler();
 //
 
+app.use(bodyParser.json());
+
+// io.on('connection', (socket) => {
+  // socket.on('message', (data) => {
+  //   console.log('message received:', data);
+  //   io.emit('message', data); // broadcast the message to all connected clients
+  // });
+// });
+
 // ! line below is important
 nextApp.prepare().then(() => {
-	const app = express()
-	app.use(bodyParser.json());
 
 	app.get('/', (req, res) => {
 		console.log("Getting stuff from home page");
@@ -19,8 +31,8 @@ nextApp.prepare().then(() => {
 	})
 
 	app.post('/api/message', (req, res) => {
-		console.log(req.body)
-		res.status(200).send(req.body);
+		io.emit('message', req.body)
+		res.status(200).send("Message Received");
 	});
 
 // ! and apparently this line below too which handles all routes
@@ -30,7 +42,7 @@ nextApp.prepare().then(() => {
 
 	const port = 3000
 
-	app.listen(port, () => {
+	httpServer.listen(port, () => {
 		console.log('server is listening on port', port)
 	})
 });

@@ -1,6 +1,8 @@
 import Head from 'next/head'
 import styles from '@/styles/Home.module.css'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { io } from 'socket.io-client';
+const socket = io();
 
 export default function Home() {
   const [message, setMessage] = useState("")
@@ -17,14 +19,18 @@ export default function Home() {
       },
       body: JSON.stringify({ name, message }),
     });
-
-    const messages = await res.json();
-    setAllMessages([...allMessages, messages])
-    console.log(allMessages)
+    console.log(res)
 
     setName("")
     setMessage("")
   }
+
+  useEffect(() => {
+    socket.off('message');
+    socket.on('message', (data) => {
+      setAllMessages((oldMessages) => [...oldMessages, data]);
+    });
+  }, []);
 
 
   return (
