@@ -1,5 +1,5 @@
 ## Description
-Chatsation is a "chat app", but so far, it only works having two browsers under the same localhost link and the "conversation" happens live with yourself. This was honestly just to try out Socket.io but for now.
+Chatsation is a "chat app", but so far, it only works having two browsers under the same localhost link and the "conversation" happens live with yourself. This was honestly just to try out Socket.io.
 </br>
 But it still works in your local machine as long as you follow the instructions below!
 
