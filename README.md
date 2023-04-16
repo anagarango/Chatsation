@@ -37,3 +37,7 @@ npm run dev
 * Socket.io
 * Jasmine
 * Axios
+
+## Screenshots
+![Screenshot 2023-04-15 at 17 30 34](https://user-images.githubusercontent.com/91710569/232259939-46aa8035-7365-4c42-a6f4-684fb0454718.jpg)
+![Screenshot 2023-04-15 at 17 30 46](https://user-images.githubusercontent.com/91710569/232259943-4aae8a52-36a6-4575-90bf-879986c37e9a.jpg)
